@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { createPublicClient, http } from "viem";
+import { createPublicClient, encodeFunctionData, http } from "viem";
 import { celo } from "viem/chains";
-import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from "wagmi";
 import { useMiniPay } from "@/hooks/useMiniPay";
 import { contractConfig } from "@/lib/contract";
 import {
@@ -39,7 +39,7 @@ export default function Game() {
   const [loadError, setLoadError] = useState(false);
   const [txError, setTxError] = useState<string | null>(null);
 
-  const { writeContractAsync, data: hash, isPending } = useWriteContract();
+  const { sendTransactionAsync, data: hash, isPending } = useSendTransaction();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
   const busy = isPending || isConfirming;
@@ -106,14 +106,18 @@ export default function Game() {
 
     setTxError(null);
     try {
-      await writeContractAsync({
-        ...contractConfig,
-        account: address,
-        chainId: celo.id,
+      const data = encodeFunctionData({
+        abi: contractConfig.abi,
         functionName: "roll",
         args: [BigInt(target)],
+      });
+
+      await sendTransactionAsync({
+        account: address,
+        to: contractConfig.address,
+        data,
         ...(isMiniPay ? { feeCurrency: MINIPAY_FEE_CURRENCY } : {}),
-      } as Parameters<typeof writeContractAsync>[0]);
+      } as Parameters<typeof sendTransactionAsync>[0]);
     } catch (error) {
       setTxError(error instanceof Error ? error.message.slice(0, 180) : "Transaction rejected or failed.");
     }
