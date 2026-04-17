@@ -64,3 +64,5 @@ html { scroll-behavior: smooth; }
 
 @keyframes rollGlow { 0%, 100% { text-shadow: 0 0 10px rgba(34,197,94,0.3); } 50% { text-shadow: 0 0 25px rgba(34,197,94,0.7); } }
 .roll-glow { animation: rollGlow 2s ease-in-out infinite; }
+
+/* transform: 1776459940083 */
