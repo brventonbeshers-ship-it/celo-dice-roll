@@ -2,3 +2,5 @@
 const nextConfig = {};
 
 module.exports = nextConfig;
+
+// next: 1776460008804
