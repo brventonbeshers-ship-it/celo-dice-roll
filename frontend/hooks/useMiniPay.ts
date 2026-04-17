@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { injected, useAccount, useConnect } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 
 interface MiniPayState {
   isMiniPay: boolean;
@@ -15,7 +15,7 @@ let hasAttemptedMiniPayAutoConnect = false;
 export function useMiniPay(): MiniPayState {
   const [isMiniPay, setIsMiniPay] = useState(false);
   const { address, isConnected } = useAccount();
-  const { connectAsync } = useConnect();
+  const { connectAsync, connectors } = useConnect();
 
   useEffect(() => {
     if (typeof window !== "undefined" && (window as any).ethereum?.isMiniPay) {
@@ -25,12 +25,14 @@ export function useMiniPay(): MiniPayState {
 
   const connect = useCallback(async () => {
     if (!isMiniPay || isConnected) return;
+    const connector = connectors.find((item) => item.id === "injected") ?? connectors[0];
+    if (!connector) return;
     try {
-      await connectAsync({ connector: injected() });
+      await connectAsync({ connector });
     } catch (error) {
       console.warn("MiniPay connection failed", error);
     }
-  }, [connectAsync, isConnected, isMiniPay]);
+  }, [connectAsync, connectors, isConnected, isMiniPay]);
 
   useEffect(() => {
     if (!isMiniPay || isConnected || hasAttemptedMiniPayAutoConnect) return;
