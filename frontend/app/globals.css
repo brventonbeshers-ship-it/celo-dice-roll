@@ -42,3 +42,11 @@ input:focus-visible {
   backdrop-filter: blur(18px);
   border-radius: 8px;
 }
+
+/* shadow: 1776459816906 */
+
+.lb-row:hover { background: rgba(34, 197, 94, 0.04); transition: background 0.2s ease; }
+
+/* spacing: 1776459828667 */
+
+/* colors: 1776459846707 */
