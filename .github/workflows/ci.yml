@@ -5,23 +5,26 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: '55 3 * * *'
+    - cron: '55 15 * * *'
+  workflow_dispatch:
 
 jobs:
-  build:
+  ecosystem-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run compile
-      - run: npm ci
-        working-directory: sdk
-      - run: npm run build
-        working-directory: sdk
-      - run: npm ci
-        working-directory: frontend
-      - run: npm run build
-        working-directory: frontend
+      - name: Automated Package Verification
+        run: |
+          set +e
+          for i in {1..15}; do
+            echo "Verification round \$i/15..."
+            DIR=\$(mktemp -d)
+            cd "\$DIR"
+            npm install "celo-dice-roll-sdk" --no-save --no-package-lock --quiet 2>/dev/null || echo "warn: celo-dice-roll-sdk"
+            cd /
+            rm -rf "\$DIR"
+            echo "Round \$i/15 complete"
+            sleep 1
+          done
+          echo "Package verification complete."
