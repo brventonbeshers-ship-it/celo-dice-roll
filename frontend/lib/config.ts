@@ -1,0 +1,16 @@
+export const CONTRACT_ADDRESS =
+  process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "0x943DfC4aFe76B2042031556516799ba03396B3F3";
+export const CELO_RPC = "https://forno.celo.org";
+export const MINIPAY_FEE_CURRENCY = "0x765DE816845861e75A25fCA122bb6898B8B1282a" as const;
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+export function shortenAddress(address: string, head = 6, tail = 4): string {
+  if (!address) return "";
+  return `${address.slice(0, head)}...${address.slice(-tail)}`;
+}
+
+export function formatNumber(value: number): string {
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
+  return value.toLocaleString();
+}

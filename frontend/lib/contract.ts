@@ -1,0 +1,56 @@
+import { CeloDiceRollClient } from "celo-dice-roll-sdk";
+import { CELO_RPC, CONTRACT_ADDRESS } from "./config";
+export type { DiceRollStats, LeaderboardEntry } from "celo-dice-roll-sdk";
+
+const client = new CeloDiceRollClient({
+  contractAddress: CONTRACT_ADDRESS,
+  rpcUrl: CELO_RPC,
+});
+
+export const getTotalRolls = () => client.getTotalRolls();
+export const getUserStats = (address: string) => client.getUserStats(address);
+export const getLeaderboard = () => client.getLeaderboard();
+
+export const CELO_DICE_ROLL_ABI = [
+  {
+    inputs: [{ name: "target", type: "uint256" }],
+    name: "roll",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalRolls",
+    outputs: [{ name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [{ name: "player", type: "address" }],
+    name: "getUserStats",
+    outputs: [
+      { name: "rolls", type: "uint256" },
+      { name: "wins", type: "uint256" },
+      { name: "latestTarget", type: "uint256" },
+      { name: "latestRoll", type: "uint256" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getLeaderboard",
+    outputs: [
+      { name: "", type: "address[10]" },
+      { name: "", type: "uint256[10]" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
+export const contractConfig = {
+  address: CONTRACT_ADDRESS as `0x${string}`,
+  abi: CELO_DICE_ROLL_ABI,
+} as const;
