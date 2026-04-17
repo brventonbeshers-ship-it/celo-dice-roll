@@ -36,3 +36,5 @@ export function useMiniPay(): MiniPayState {
 
   return { isMiniPay, address: address ?? null, isConnected, connect };
 }
+
+// minipay: 1776460012985
