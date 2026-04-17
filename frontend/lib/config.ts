@@ -14,3 +14,5 @@ export function formatNumber(value: number): string {
   if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
   return value.toLocaleString();
 }
+
+// cfg: 1776459887468

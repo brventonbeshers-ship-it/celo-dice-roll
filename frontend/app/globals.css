@@ -50,3 +50,14 @@ input:focus-visible {
 /* spacing: 1776459828667 */
 
 /* colors: 1776459846707 */
+
+html { scroll-behavior: smooth; }
+
+/* opacity: 1776459876654 */
+
+/* transition: 1776459882095 */
+
+/* timing: 1776459885280 */
+
+@keyframes diceShake { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-15deg); } 75% { transform: rotate(15deg); } }
+.dice-shake { animation: diceShake 0.4s ease-in-out; }
