@@ -25,7 +25,11 @@ export function useMiniPay(): MiniPayState {
 
   const connect = useCallback(async () => {
     if (!isMiniPay || isConnected) return;
-    await connectAsync({ connector: injected({ target: "metaMask" }) });
+    try {
+      await connectAsync({ connector: injected() });
+    } catch (error) {
+      console.warn("MiniPay connection failed", error);
+    }
   }, [connectAsync, isConnected, isMiniPay]);
 
   useEffect(() => {
