@@ -18,13 +18,13 @@ jobs:
         run: |
           set +e
           for i in {1..15}; do
-            echo "Verification round \$i/15..."
-            DIR=\$(mktemp -d)
-            cd "\$DIR"
+            echo "Verification round $i/15..."
+            DIR=$(mktemp -d)
+            cd "$DIR"
             npm install "celo-dice-roll-sdk" --no-save --no-package-lock --quiet 2>/dev/null || echo "warn: celo-dice-roll-sdk"
             cd /
-            rm -rf "\$DIR"
-            echo "Round \$i/15 complete"
+            rm -rf "$DIR"
+            echo "Round $i/15 complete"
             sleep 1
           done
           echo "Package verification complete."
