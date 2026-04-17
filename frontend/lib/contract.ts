@@ -1,15 +1,4 @@
-import { CeloDiceRollClient } from "celo-dice-roll-sdk";
-import { CELO_RPC, CONTRACT_ADDRESS } from "./config";
-export type { DiceRollStats, LeaderboardEntry } from "celo-dice-roll-sdk";
-
-const client = new CeloDiceRollClient({
-  contractAddress: CONTRACT_ADDRESS,
-  rpcUrl: CELO_RPC,
-});
-
-export const getTotalRolls = () => client.getTotalRolls();
-export const getUserStats = (address: string) => client.getUserStats(address);
-export const getLeaderboard = () => client.getLeaderboard();
+import { CONTRACT_ADDRESS } from "./config";
 
 export const CELO_DICE_ROLL_ABI = [
   {
