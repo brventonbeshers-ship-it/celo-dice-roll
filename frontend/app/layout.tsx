@@ -14,6 +14,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <meta
+          name="talentapp:project_verification"
+          content="82c3cd9bd10bea6cbe5361e2c9625a1c8472e1e25f6e3057b2e186200cb54e8513a7d44f04fd4356544d91a0875472e81a41369e0441a2d54277ff8cc31f7498"
+        />
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>
