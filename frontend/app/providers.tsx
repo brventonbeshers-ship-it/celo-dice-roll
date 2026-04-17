@@ -25,3 +25,5 @@ export function Providers({ children }: { children: React.ReactNode }) {
     </WagmiProvider>
   );
 }
+
+// providers: 1776459999153
