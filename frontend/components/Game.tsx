@@ -8,11 +8,11 @@ import { useMiniPay } from "@/hooks/useMiniPay";
 import { contractConfig } from "@/lib/contract";
 import {
   CELO_RPC,
-  MINIPAY_FEE_CURRENCY,
   ZERO_ADDRESS,
   formatNumber,
   shortenAddress,
 } from "@/lib/config";
+import { sendMiniPayTransaction } from "@/lib/minipayTx";
 
 const publicClient = createPublicClient({ chain: celo, transport: http(CELO_RPC) });
 const diceSides = [1, 2, 3, 4, 5, 6];
@@ -38,9 +38,10 @@ export default function Game() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardRow[]>([]);
   const [loadError, setLoadError] = useState(false);
   const [txError, setTxError] = useState<string | null>(null);
+  const [miniPayHash, setMiniPayHash] = useState<`0x${string}`>();
 
   const { sendTransactionAsync, data: hash, isPending } = useSendTransaction();
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: miniPayHash ?? hash });
 
   const busy = isPending || isConfirming;
   const winRate = stats.rolls === 0 ? 0 : Math.round((stats.wins / stats.rolls) * 100);
@@ -105,6 +106,7 @@ export default function Game() {
     if (!isConnected || !address || busy) return;
 
     setTxError(null);
+    setMiniPayHash(undefined);
     try {
       const data = encodeFunctionData({
         abi: contractConfig.abi,
@@ -112,12 +114,16 @@ export default function Game() {
         args: [BigInt(target)],
       });
 
-      await sendTransactionAsync({
-        account: address,
-        to: contractConfig.address,
-        data,
-        ...(isMiniPay ? { feeCurrency: MINIPAY_FEE_CURRENCY } : {}),
-      } as Parameters<typeof sendTransactionAsync>[0]);
+      if (isMiniPay) {
+        const nextHash = await sendMiniPayTransaction(contractConfig.address, data);
+        setMiniPayHash(nextHash);
+      } else {
+        await sendTransactionAsync({
+          account: address,
+          to: contractConfig.address,
+          data,
+        } as Parameters<typeof sendTransactionAsync>[0]);
+      }
     } catch (error) {
       setTxError(error instanceof Error ? error.message.slice(0, 180) : "Transaction rejected or failed.");
     }
