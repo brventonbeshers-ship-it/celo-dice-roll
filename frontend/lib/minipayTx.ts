@@ -17,6 +17,8 @@ const publicClient = createPublicClient({
   transport: http(CELO_RPC),
 });
 
+const CELO_MAINNET_CHAIN_ID = "0xa4ec";
+
 const balanceOfAbi = [
   {
     inputs: [{ name: "account", type: "address" }],
@@ -28,7 +30,7 @@ const balanceOfAbi = [
 ] as const;
 
 async function getMiniPayFeeParams(account: `0x${string}`, to: `0x${string}`, data: Hex) {
-  const [gas, gasPriceHex, priorityFeeHex] = await Promise.all([
+  const [gas, gasPriceHex] = await Promise.all([
     publicClient.estimateGas({
       account,
       to,
@@ -39,16 +41,11 @@ async function getMiniPayFeeParams(account: `0x${string}`, to: `0x${string}`, da
       method: "eth_gasPrice",
       params: [MINIPAY_FEE_CURRENCY],
     } as any),
-    publicClient.request({
-      method: "eth_maxPriorityFeePerGas",
-      params: [MINIPAY_FEE_CURRENCY],
-    } as any),
   ]);
 
   return {
     gas: (gas * BigInt(120)) / BigInt(100),
-    maxFeePerGas: BigInt(gasPriceHex as string),
-    maxPriorityFeePerGas: BigInt(priorityFeeHex as string),
+    gasPrice: BigInt(gasPriceHex as string),
   };
 }
 
@@ -74,6 +71,11 @@ export async function sendMiniPayTransaction(to: `0x${string}`, data: Hex) {
     throw new Error("MiniPay provider not found.");
   }
 
+  const chainId = (await window.ethereum.request({ method: "eth_chainId" })) as string;
+  if (chainId?.toLowerCase() !== CELO_MAINNET_CHAIN_ID) {
+    throw new Error("MiniPay is not on Celo mainnet. Turn off Developer Settings -> Use Testnet and reopen the Mini App.");
+  }
+
   const account = await getMiniPayAccount(window.ethereum);
   if (!account) {
     throw new Error("MiniPay account not found.");
@@ -86,7 +88,7 @@ export async function sendMiniPayTransaction(to: `0x${string}`, data: Hex) {
     functionName: "balanceOf",
     args: [account],
   });
-  const requiredFee = feeParams.gas * feeParams.maxFeePerGas;
+  const requiredFee = feeParams.gas * feeParams.gasPrice;
 
   if (usdBalance < requiredFee) {
     throw new Error(
@@ -98,11 +100,9 @@ export async function sendMiniPayTransaction(to: `0x${string}`, data: Hex) {
     from: account,
     to,
     data,
-    type: "0x7b",
     feeCurrency: MINIPAY_FEE_CURRENCY,
     gas: numberToHex(feeParams.gas),
-    maxFeePerGas: numberToHex(feeParams.maxFeePerGas),
-    maxPriorityFeePerGas: numberToHex(feeParams.maxPriorityFeePerGas),
+    gasPrice: numberToHex(feeParams.gasPrice),
   };
 
   try {
