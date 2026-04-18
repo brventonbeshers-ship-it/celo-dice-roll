@@ -108,3 +108,12 @@ html { scroll-behavior: smooth; }
 /* colors: 1776493414714 */
 
 /* transform: 1776493420189 */
+
+/* transition: 1776493453519 */
+
+/* radius: 1776493455774 */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(34, 197, 94, 0.3); border-radius: 3px; }
+
+/* spacing: 1776493478302 */
