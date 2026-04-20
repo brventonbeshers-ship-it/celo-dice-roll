@@ -232,3 +232,6 @@ html { scroll-behavior: smooth; }
 /* transform: 1776671854640 */
 
 /* shadow: 1776671866398 */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(34, 197, 94, 0.3); border-radius: 3px; }
