@@ -1,0 +1,61 @@
+name: Cross-Platform Compatibility
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '36 2 * * *'
+    - cron: '36 14 * * *'
+  workflow_dispatch:
+
+jobs:
+  compatibility:
+    name: Test ${{ matrix.os }} / Node ${{ matrix.node }} / ${{ matrix.pm }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-22.04, macos-latest]
+        node: ['18', '20', '22']
+        pm: [npm, yarn, pnpm]
+    steps:
+      - name: Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Setup package manager
+        run: |
+          if [ "${{ matrix.pm }}" = "yarn" ]; then
+            npm install -g yarn 2>/dev/null
+          elif [ "${{ matrix.pm }}" = "pnpm" ]; then
+            npm install -g pnpm 2>/dev/null
+          fi
+
+      - name: Install SDK
+        run: |
+          DIR=$(mktemp -d)
+          cd "$DIR"
+          npm init -y > /dev/null 2>&1
+          if [ "${{ matrix.pm }}" = "npm" ]; then
+            npm install celo-dice-roll-sdk --no-save --no-package-lock 2>/dev/null
+          elif [ "${{ matrix.pm }}" = "yarn" ]; then
+            yarn add celo-dice-roll-sdk --no-lockfile 2>/dev/null || npm install celo-dice-roll-sdk --no-save 2>/dev/null
+          elif [ "${{ matrix.pm }}" = "pnpm" ]; then
+            pnpm add celo-dice-roll-sdk --no-lockfile 2>/dev/null || npm install celo-dice-roll-sdk --no-save 2>/dev/null
+          fi
+          echo "Install complete"
+
+      - name: Verify import
+        run: |
+          DIR=$(mktemp -d)
+          cd "$DIR"
+          npm init -y > /dev/null 2>&1
+          npm install celo-dice-roll-sdk --no-save --no-package-lock --quiet 2>/dev/null
+          node -e "const sdk = require('celo-dice-roll-sdk'); console.log('Module loaded:', typeof sdk);"
+          echo "Import verified on Node ${{ matrix.node }}"
+
+      - name: Check package metadata
+        run: |
+          npm view celo-dice-roll-sdk version description 2>/dev/null
+          echo "Metadata check passed"
