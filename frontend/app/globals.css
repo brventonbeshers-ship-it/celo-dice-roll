@@ -612,3 +612,10 @@ html { scroll-behavior: smooth; }
 /* radius: 1777118955069 */
 
 /* transform: 1777118959320 */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(34, 197, 94, 0.3); border-radius: 3px; }
+
+/* timing: 1777119021346 */
+
+/* spacing: 1777119024594 */
