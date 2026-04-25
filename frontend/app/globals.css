@@ -581,3 +581,10 @@ html { scroll-behavior: smooth; }
 /* transition: 1777066223094 */
 
 /* opacity: 1777066231621 */
+
+/* font: 1777102883943 */
+
+/* colors: 1777102889196 */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(34, 197, 94, 0.3); border-radius: 3px; }
