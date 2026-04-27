@@ -69,3 +69,5 @@ export const config = getDefaultConfig({
 // wagmi: 1777214445124
 
 // wagmi: 1777237235711
+
+// wagmi: 1777265612151
