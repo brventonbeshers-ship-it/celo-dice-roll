@@ -840,3 +840,6 @@ html { scroll-behavior: smooth; }
 /* spacing: 1777699703039 */
 
 /* font: 1777699752154 */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(34, 197, 94, 0.3); border-radius: 3px; }
